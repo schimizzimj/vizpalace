@@ -5,6 +5,7 @@ import {
   appendXAxis,
   appendYAxis,
 } from "../base/chartUtils";
+import { ChartOptions, LineData } from "../../types";
 
 export function createLineChart(
   element: HTMLElement,

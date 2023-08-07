@@ -5,6 +5,7 @@ import {
   appendXAxis,
   appendYAxis,
 } from "../base/chartUtils";
+import { BarData, ChartOptions } from "../../types";
 
 export function createBarChart(
   element: HTMLElement,

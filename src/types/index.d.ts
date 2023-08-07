@@ -1,14 +1,14 @@
-interface BarData {
+export interface BarData {
   label: string;
   value: number;
 }
 
-interface LineData {
+export interface LineData {
   date: Date;
   value: number;
 }
 
-interface ChartOptions {
+export interface ChartOptions {
   width: number;
   height: number;
   margin?: {

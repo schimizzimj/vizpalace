@@ -1,17 +1,18 @@
 import { assert, expect, test, describe, beforeEach, afterEach } from "vitest";
-import { createLineChart } from "../charts/lineChart";
+import { createBarChart } from "../../../src/core/charts/barChart";
+import { BarData } from "../../../src/types";
 
-describe("lineChart", () => {
+describe("barChart", () => {
   let container: HTMLDivElement;
-  let data: LineData[];
+  let data: BarData[];
 
   beforeEach(() => {
     container = document.createElement("div");
     document.body.appendChild(container);
     data = [
-      { date: new Date("2020-01-01"), value: 10 },
-      { date: new Date("2020-01-02"), value: 20 },
-      { date: new Date("2020-01-03"), value: 30 },
+      { label: "foo", value: 10 },
+      { label: "bar", value: 20 },
+      { label: "baz", value: 30 },
     ];
   });
 
@@ -19,14 +20,14 @@ describe("lineChart", () => {
     document.body.removeChild(container);
   });
 
-  test("it should render a line chart", () => {
-    createLineChart(container, data, {});
+  test("it should render a bar chart", () => {
+    createBarChart(container, data, {});
 
     const svg = container.querySelector("svg");
     assert(svg);
 
-    const lines = svg.querySelectorAll(".line");
-    expect(lines.length).toBe(1);
+    const bars = svg.querySelectorAll("rect");
+    expect(bars.length).toBe(3);
   });
 
   test("it should use custom width and height", () => {
@@ -35,7 +36,7 @@ describe("lineChart", () => {
       height: 100,
       margin: { top: 0, bottom: 0, left: 0, right: 0 },
     };
-    createLineChart(container, data, config);
+    createBarChart(container, data, config);
 
     const svg = container.querySelector("svg");
     assert(svg);
@@ -49,7 +50,7 @@ describe("lineChart", () => {
       height: 100,
       margin: { top: 10, right: 10, bottom: 10, left: 10 },
     };
-    createLineChart(container, data, config);
+    createBarChart(container, data, config);
 
     const svg = container.querySelector("svg");
     assert(svg);
@@ -61,8 +62,9 @@ describe("lineChart", () => {
     );
   });
 
-  test("it should look visually correct", () => {
-    createLineChart(container, data, {});
+  test("it should look visually correct", async () => {
+    createBarChart(container, data, { animationDuration: 0 });
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const result = container.innerHTML;
     expect(result).toMatchSnapshot();
   });
