@@ -3,6 +3,11 @@ interface BarData {
   value: number;
 }
 
+interface LineData {
+  date: Date;
+  value: number;
+}
+
 interface ChartOptions {
   width: number;
   height: number;

@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 
 // Default chart options
-const defaultOptions: ChartOptions = {
+const defaultOptions = {
   width: 600,
   height: 400,
   margin: {
@@ -12,12 +12,11 @@ const defaultOptions: ChartOptions = {
   },
 };
 
-export function createBarChart(
+export function createLineChart(
   element: HTMLElement,
-  data: BarData[],
+  data: LineData[],
   userOptions: Partial<ChartOptions> = {}
 ): void {
-  // Merge default options with user options
   const options = { ...defaultOptions, ...userOptions };
   const { width, height, margin } = options;
 
@@ -30,10 +29,9 @@ export function createBarChart(
     .attr("transform", `translate(${margin?.left ?? 0},${margin?.top ?? 0})`);
 
   const xScale = d3
-    .scaleBand()
-    .domain(data.map((d) => d.label))
-    .range([0, width])
-    .padding(0.1);
+    .scaleTime()
+    .domain(d3.extent(data, (d) => d.date) as [Date, Date])
+    .range([0, width]);
 
   const yMax =
     d3.max(data, (d) =>
@@ -42,14 +40,19 @@ export function createBarChart(
 
   const yScale = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
 
+  // Create the line generator
+  const line = d3
+    .line<LineData>()
+    .x((d) => xScale(d.date))
+    .y((d) => yScale(d.value ?? 0));
+
+  // Draw the line
   svg
-    .selectAll(".bar")
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("class", "bar")
-    .attr("x", (d) => xScale(d.label) || 0)
-    .attr("y", (d) => yScale(d.value ?? 0))
-    .attr("width", xScale.bandwidth())
-    .attr("height", (d) => height - yScale(d.value ?? 0));
+    .append("path")
+    .datum(data)
+    .attr("class", "line")
+    .attr("d", line)
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5);
 }
