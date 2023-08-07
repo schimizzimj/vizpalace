@@ -17,4 +17,5 @@ interface ChartOptions {
     bottom: number;
     left: number;
   };
+  animationDuration?: number;
 }

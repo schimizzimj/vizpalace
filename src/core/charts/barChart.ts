@@ -13,8 +13,9 @@ export function createBarChart(
 ): void {
   // Merge default options with user options
   const options = initializeChartDimensions(userOptions);
-  const { width, height } = options;
+  let { width, height, animationDuration } = options;
   const svg = createSVG(element, options);
+  animationDuration = animationDuration ?? 1000;
 
   const xScale = d3
     .scaleBand()
@@ -29,15 +30,22 @@ export function createBarChart(
 
   const yScale = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
 
-  svg
+  const bars = svg
     .selectAll(".bar")
     .data(data)
     .enter()
     .append("rect")
     .attr("class", "bar")
     .attr("x", (d) => xScale(d.label) || 0)
-    .attr("y", (d) => yScale(d.value ?? 0))
+    .attr("y", height)
     .attr("width", xScale.bandwidth())
+    .attr("height", 0);
+
+  bars
+    .transition()
+    .duration(animationDuration)
+    .ease(d3.easeCubicInOut)
+    .attr("y", (d) => yScale(d.value ?? 0))
     .attr("height", (d) => height - yScale(d.value ?? 0));
 
   appendXAxis(svg, xScale, height);

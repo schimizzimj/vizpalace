@@ -61,8 +61,9 @@ describe("barChart", () => {
     );
   });
 
-  test("it should look visually correct", () => {
-    createBarChart(container, data, {});
+  test("it should look visually correct", async () => {
+    createBarChart(container, data, { animationDuration: 0 });
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const result = container.innerHTML;
     expect(result).toMatchSnapshot();
   });
