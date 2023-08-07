@@ -12,9 +12,10 @@ export function createLineChart(
   userOptions: Partial<ChartOptions> = {}
 ): void {
   const options = initializeChartDimensions(userOptions);
-  const { width, height } = options;
+  let { width, height, animationDuration } = options;
 
   const svg = createSVG(element, options);
+  animationDuration = animationDuration ?? 0;
 
   const xScale = d3
     .scaleTime()
@@ -35,7 +36,7 @@ export function createLineChart(
     .y((d) => yScale(d.value ?? 0));
 
   // Draw the line
-  svg
+  const linePath = svg
     .append("path")
     .datum(data)
     .attr("class", "line")
@@ -43,6 +44,17 @@ export function createLineChart(
     .attr("fill", "none")
     .attr("stroke", "steelblue")
     .attr("stroke-width", 1.5);
+
+  if (linePath.node()?.getTotalLength) {
+    const totalLength = linePath.node()?.getTotalLength() ?? 0;
+    linePath
+      .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+      .attr("stroke-dashoffset", totalLength)
+      .transition()
+      .duration(animationDuration)
+      .ease(d3.easeLinear)
+      .attr("stroke-dashoffset", 0);
+  }
 
   appendXAxis(svg, xScale, height);
   appendYAxis(svg, yScale);
