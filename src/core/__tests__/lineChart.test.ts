@@ -25,7 +25,7 @@ describe("lineChart", () => {
     const svg = container.querySelector("svg");
     assert(svg);
 
-    const lines = svg.querySelectorAll("path");
+    const lines = svg.querySelectorAll(".line");
     expect(lines.length).toBe(1);
   });
 

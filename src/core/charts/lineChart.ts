@@ -1,32 +1,20 @@
 import * as d3 from "d3";
-
-// Default chart options
-const defaultOptions = {
-  width: 600,
-  height: 400,
-  margin: {
-    top: 20,
-    right: 20,
-    bottom: 30,
-    left: 40,
-  },
-};
+import {
+  initializeChartDimensions,
+  createSVG,
+  appendXAxis,
+  appendYAxis,
+} from "../base/chartUtils";
 
 export function createLineChart(
   element: HTMLElement,
   data: LineData[],
   userOptions: Partial<ChartOptions> = {}
 ): void {
-  const options = { ...defaultOptions, ...userOptions };
-  const { width, height, margin } = options;
+  const options = initializeChartDimensions(userOptions);
+  const { width, height } = options;
 
-  const svg = d3
-    .select(element)
-    .append("svg")
-    .attr("width", width + (margin?.left ?? 0) + (margin?.right ?? 0))
-    .attr("height", height + (margin?.top ?? 0) + (margin?.bottom ?? 0))
-    .append("g")
-    .attr("transform", `translate(${margin?.left ?? 0},${margin?.top ?? 0})`);
+  const svg = createSVG(element, options);
 
   const xScale = d3
     .scaleTime()
@@ -55,4 +43,7 @@ export function createLineChart(
     .attr("fill", "none")
     .attr("stroke", "steelblue")
     .attr("stroke-width", 1.5);
+
+  appendXAxis(svg, xScale, height);
+  appendYAxis(svg, yScale);
 }

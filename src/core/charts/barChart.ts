@@ -1,16 +1,10 @@
 import * as d3 from "d3";
-
-// Default chart options
-const defaultOptions: ChartOptions = {
-  width: 600,
-  height: 400,
-  margin: {
-    top: 20,
-    right: 20,
-    bottom: 30,
-    left: 40,
-  },
-};
+import {
+  initializeChartDimensions,
+  createSVG,
+  appendXAxis,
+  appendYAxis,
+} from "../base/chartUtils";
 
 export function createBarChart(
   element: HTMLElement,
@@ -18,16 +12,9 @@ export function createBarChart(
   userOptions: Partial<ChartOptions> = {}
 ): void {
   // Merge default options with user options
-  const options = { ...defaultOptions, ...userOptions };
-  const { width, height, margin } = options;
-
-  const svg = d3
-    .select(element)
-    .append("svg")
-    .attr("width", width + (margin?.left ?? 0) + (margin?.right ?? 0))
-    .attr("height", height + (margin?.top ?? 0) + (margin?.bottom ?? 0))
-    .append("g")
-    .attr("transform", `translate(${margin?.left ?? 0},${margin?.top ?? 0})`);
+  const options = initializeChartDimensions(userOptions);
+  const { width, height } = options;
+  const svg = createSVG(element, options);
 
   const xScale = d3
     .scaleBand()
@@ -52,4 +39,7 @@ export function createBarChart(
     .attr("y", (d) => yScale(d.value ?? 0))
     .attr("width", xScale.bandwidth())
     .attr("height", (d) => height - yScale(d.value ?? 0));
+
+  appendXAxis(svg, xScale, height);
+  appendYAxis(svg, yScale);
 }
