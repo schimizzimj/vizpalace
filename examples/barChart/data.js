@@ -1,8 +1,13 @@
 export const data = [
-  { label: "A", value: 10 },
-  { label: "B", value: 20 },
-  { label: "C", value: 30 },
-  { label: "D", value: 40 },
-  { label: "E", value: 50 },
-  { label: "F", value: 60 },
+  {
+    name: "Series 1",
+    values: [
+      { x: "A", y: 10 },
+      { x: "B", y: 20 },
+      { x: "C", y: 30 },
+      { x: "D", y: 40 },
+      { x: "E", y: 50 },
+      { x: "F", y: 60 },
+    ],
+  },
 ];

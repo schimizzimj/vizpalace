@@ -1,4 +1,6 @@
 import * as d3 from "d3";
+import { ChartOptions } from "../../types";
+import { isScaleBand } from "../utils/utils";
 
 export const defaultOptions: ChartOptions = {
   width: 600,
@@ -35,27 +37,25 @@ export function createSVG(
   return svg;
 }
 
-export function appendXAxis(
-  svg: d3.Selection<SVGGElement, unknown, any, any>,
-  scale: d3.ScaleBand<string>,
-  height: number
-): void;
+type XScale =
+  | d3.ScaleBand<string>
+  | d3.ScaleTime<number, number>
+  | d3.ScaleLinear<number, number>;
 
 export function appendXAxis(
   svg: d3.Selection<SVGGElement, unknown, any, any>,
-  scale: d3.ScaleTime<number, number> | d3.ScaleLinear<number, number>,
-  height: number
-): void;
-
-export function appendXAxis(
-  svg: d3.Selection<SVGGElement, unknown, any, any>,
-  scale: any,
+  scale: XScale,
   height: number
 ): void {
-  svg
-    .append("g")
-    .attr("transform", `translate(0, ${height})`)
-    .call(d3.axisBottom(scale));
+  if (isScaleBand(scale)) {
+    const axis = d3.axisBottom(scale);
+    svg.append("g").attr("transform", `translate(0, ${height})`).call(axis);
+  } else {
+    const axis = d3.axisBottom(
+      scale as d3.ScaleTime<number, number> | d3.ScaleLinear<number, number>
+    );
+    svg.append("g").attr("transform", `translate(0, ${height})`).call(axis);
+  }
 }
 
 export function appendYAxis(
