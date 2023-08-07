@@ -1,13 +1,3 @@
-export interface BarData {
-  label: string;
-  value: number;
-}
-
-export interface LineData {
-  date: Date;
-  value: number;
-}
-
 export interface DataPoint<T = string | number | Date> {
   x: T; // x-axis value, can be a category, numeric value or date
   y: number | null; // y-axis value
