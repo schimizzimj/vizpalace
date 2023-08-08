@@ -9,6 +9,11 @@ import {
 import { BarChartOptions, ChartData } from "../../types";
 import { isScaleBand } from "../utils/utils";
 
+interface ColoredSeriesPoint<T> extends d3.SeriesPoint<T> {
+  color?: string;
+  seriesName: string;
+}
+
 export function createBarChart<T = string | number | Date>(
   element: HTMLElement,
   data: ChartData<T>,
@@ -85,7 +90,14 @@ function prepareStackedData<T = number | string | Date>(data: ChartData<T>) {
     });
     return obj;
   });
-  return d3.stack().keys(seriesNames)(stackedDataFormat);
+  const stackedData = d3.stack().keys(seriesNames)(stackedDataFormat);
+  stackedData.forEach((series, i) => {
+    series.forEach((d) => {
+      (d as ColoredSeriesPoint<T>).color = data[i].color;
+      (d as ColoredSeriesPoint<T>).seriesName = data[i].name;
+    });
+  });
+  return stackedData;
 }
 
 function drawGroupedBars<T = number | string | Date>(
@@ -148,7 +160,6 @@ function drawStackedBars(
   height: number,
   duration: number
 ) {
-  console.log(data);
   const barWidth = isScaleBand(xScale) ? xScale.bandwidth() : 20;
 
   const series = svg
@@ -163,6 +174,14 @@ function drawStackedBars(
     .data((d) => d)
     .enter()
     .append("rect")
+    .attr("fill", (d) => {
+      if ((d as any).color) {
+        return (d as any).color;
+      } else if ((d as any).seriesName) {
+        return colors((d as any).seriesName);
+      }
+      return "black";
+    })
     .attr("x", (d) => {
       if (isScaleBand(xScale)) {
         return xScale(d.data.label) ?? 0;

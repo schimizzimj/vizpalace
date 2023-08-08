@@ -1,6 +1,6 @@
 import { assert, expect, test, describe, beforeEach, afterEach } from "vitest";
 import { createBarChart } from "../../../src/core/charts/barChart";
-import { ChartData } from "../../../src/types";
+import { BarChartOptions, ChartData } from "../../../src/types";
 
 describe("barChart", () => {
   let container: HTMLDivElement;
@@ -80,6 +80,10 @@ describe("barChart", () => {
   });
 
   describe("multiple series", () => {
+    let config: Partial<BarChartOptions> = {
+      displayType: "grouped",
+    };
+
     beforeEach(() => {
       data = [
         {
@@ -101,21 +105,48 @@ describe("barChart", () => {
       ];
     });
 
-    test("it should render a bar chart", () => {
-      createBarChart(container, data, {});
+    describe("stacked", () => {
+      beforeEach(() => {
+        config = {
+          displayType: "stacked",
+        };
+      });
 
-      const svg = container.querySelector("svg");
-      assert(svg);
+      test("it should render a bar chart", () => {
+        createBarChart(container, data, config);
 
-      const bars = svg.querySelectorAll("rect");
-      expect(bars.length).toBe(6);
+        const svg = container.querySelector("svg");
+        assert(svg);
+
+        const bars = svg.querySelectorAll("rect");
+        expect(bars.length).toBe(6);
+      });
+
+      test("it should look visually correct", async () => {
+        createBarChart(container, data, { animationDuration: 0 });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const result = container.innerHTML;
+        expect(result).toMatchSnapshot();
+      });
     });
 
-    test("it should look visually correct", async () => {
-      createBarChart(container, data, { animationDuration: 0 });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const result = container.innerHTML;
-      expect(result).toMatchSnapshot();
+    describe("grouped", () => {
+      test("it should render a bar chart", () => {
+        createBarChart(container, data, {});
+
+        const svg = container.querySelector("svg");
+        assert(svg);
+
+        const bars = svg.querySelectorAll("rect");
+        expect(bars.length).toBe(6);
+      });
+
+      test("it should look visually correct", async () => {
+        createBarChart(container, data, { animationDuration: 0 });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const result = container.innerHTML;
+        expect(result).toMatchSnapshot();
+      });
     });
   });
 });
