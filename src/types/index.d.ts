@@ -22,3 +22,7 @@ export interface ChartOptions {
   };
   animationDuration?: number;
 }
+
+export interface BarChartOptions extends ChartOptions {
+  displayType?: "stacked" | "grouped";
+}

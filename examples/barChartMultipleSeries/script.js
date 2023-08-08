@@ -10,6 +10,7 @@ const chartOptions = {
     left: 50,
     right: 50,
   },
+  displayType: "grouped",
 };
 
 createBarChart(document.getElementById("barChart"), data, chartOptions);
