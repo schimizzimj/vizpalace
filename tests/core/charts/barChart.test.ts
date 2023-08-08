@@ -71,6 +71,54 @@ describe("barChart", () => {
       );
     });
 
+    test("it display the x axis by default", () => {
+      createBarChart(container, data, {});
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const xAxis = svg.querySelector(".x-axis");
+      assert(xAxis);
+    });
+
+    test("it should not display the x axis when disabled", () => {
+      createBarChart(container, data, {
+        xAxis: {
+          enabled: false,
+        },
+      });
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const xAxis = svg.querySelector(".x-axis");
+      expect(xAxis).toBeNull();
+    });
+
+    test("it should display the y axis by default", () => {
+      createBarChart(container, data, {});
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const yAxis = svg.querySelector(".y-axis");
+      assert(yAxis);
+    });
+
+    test("it should not display the y axis when disabled", () => {
+      createBarChart(container, data, {
+        yAxis: {
+          enabled: false,
+        },
+      });
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const yAxis = svg.querySelector(".y-axis");
+      expect(yAxis).toBeNull();
+    });
+
     test("it should look visually correct", async () => {
       createBarChart(container, data, { animationDuration: 0 });
       await new Promise((resolve) => setTimeout(resolve, 1000));

@@ -13,6 +13,17 @@ export const defaultOptions: ChartOptions = {
   },
 };
 
+export const defaultBarChartOptions: BarChartOptions = {
+  ...defaultOptions,
+  displayType: "grouped",
+  xAxis: {
+    enabled: true,
+  },
+  yAxis: {
+    enabled: true,
+  },
+};
+
 export function initializeChartDimensions(
   userOptions: Partial<ChartOptions> = {}
 ): ChartOptions {
@@ -24,7 +35,7 @@ export function initializeChartDimensions(
 export function initializeBarChartDimensions(
   userOptions: Partial<BarChartOptions> = {}
 ): BarChartOptions {
-  const options = initializeChartDimensions(userOptions);
+  const options = { ...defaultBarChartOptions, ...userOptions };
   return options;
 }
 
@@ -56,12 +67,20 @@ export function appendXAxis(
 ): void {
   if (isScaleBand(scale)) {
     const axis = d3.axisBottom(scale);
-    svg.append("g").attr("transform", `translate(0, ${height})`).call(axis);
+    svg
+      .append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0, ${height})`)
+      .call(axis);
   } else {
     const axis = d3.axisBottom(
       scale as d3.ScaleTime<number, number> | d3.ScaleLinear<number, number>
     );
-    svg.append("g").attr("transform", `translate(0, ${height})`).call(axis);
+    svg
+      .append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0, ${height})`)
+      .call(axis);
   }
 }
 
@@ -69,5 +88,5 @@ export function appendYAxis(
   svg: d3.Selection<SVGGElement, unknown, any, any>,
   scale: d3.AxisScale<number | { valueOf(): number }>
 ): void {
-  svg.append("g").call(d3.axisLeft(scale));
+  svg.append("g").attr("class", "y-axis").call(d3.axisLeft(scale));
 }

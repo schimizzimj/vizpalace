@@ -11,6 +11,19 @@ export interface ChartSeries<T = string | number | Date> {
 
 export type ChartData<T = string | number | Date> = ChartSeries<T>[];
 
+interface XAxisOptions {
+  enabled?: boolean;
+}
+
+interface YAxisOptions {
+  enabled?: boolean;
+}
+
+interface AxisOptions {
+  yAxis?: YAxisOptions;
+  xAxis?: XAxisOptions;
+}
+
 export interface ChartOptions {
   width: number;
   height: number;
@@ -23,6 +36,6 @@ export interface ChartOptions {
   animationDuration?: number;
 }
 
-export interface BarChartOptions extends ChartOptions {
+export interface BarChartOptions extends ChartOptions, AxisOptions {
   displayType?: "stacked" | "grouped";
 }

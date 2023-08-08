@@ -21,7 +21,7 @@ export function createBarChart<T = string | number | Date>(
 ): void {
   // Merge default options with user options
   const options = initializeBarChartDimensions(userOptions);
-  let { width, height, animationDuration, displayType } = options;
+  let { width, height, animationDuration, displayType, xAxis, yAxis } = options;
   const svg = createSVG(element, options);
   const duration = animationDuration ?? 1000;
   const type = displayType ?? "grouped";
@@ -77,8 +77,12 @@ export function createBarChart<T = string | number | Date>(
     yScale.domain([0, yMax]);
     drawGroupedBars(svg, data, xScale, yScale, colorScale, height, duration);
   }
-  appendXAxis(svg, xScale, height);
-  appendYAxis(svg, yScale);
+  if (xAxis?.enabled) {
+    appendXAxis(svg, xScale, height);
+  }
+  if (yAxis?.enabled) {
+    appendYAxis(svg, yScale);
+  }
 }
 
 function prepareStackedData<T = number | string | Date>(data: ChartData<T>) {
