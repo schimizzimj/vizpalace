@@ -1,20 +1,20 @@
 import * as d3 from "d3";
 import {
-  initializeChartDimensions,
   createSVG,
   appendXAxis,
   appendYAxis,
+  initializeLineChartDimensions,
 } from "../base/chartUtils";
-import { ChartOptions, ChartData, DataPoint } from "../../types";
+import { ChartData, DataPoint, LineChartOptions } from "../../types";
 import { isScaleBand } from "../utils/utils";
 
 export function createLineChart<T = number | string | Date>(
   element: HTMLElement,
   data: ChartData<T>,
-  userOptions: Partial<ChartOptions> = {}
+  userOptions: Partial<LineChartOptions> = {}
 ): void {
-  const options = initializeChartDimensions(userOptions);
-  let { width, height, animationDuration } = options;
+  const options = initializeLineChartDimensions(userOptions);
+  let { width, height, animationDuration, xAxis, yAxis } = options;
   const svg = createSVG(element, options);
   const duration = animationDuration ?? 0;
 
@@ -84,6 +84,10 @@ export function createLineChart<T = number | string | Date>(
     }
   });
 
-  appendXAxis(svg, xScale, height);
-  appendYAxis(svg, yScale);
+  if (xAxis?.enabled) {
+    appendXAxis(svg, xScale, height);
+  }
+  if (yAxis?.enabled) {
+    appendYAxis(svg, yScale);
+  }
 }

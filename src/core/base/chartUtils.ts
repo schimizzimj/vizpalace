@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { BarChartOptions, ChartOptions } from "../../types";
+import { BarChartOptions, ChartOptions, LineChartOptions } from "../../types";
 import { isScaleBand } from "../utils/utils";
 
 export const defaultOptions: ChartOptions = {
@@ -24,6 +24,16 @@ export const defaultBarChartOptions: BarChartOptions = {
   },
 };
 
+export const defaultLineChartOptions: LineChartOptions = {
+  ...defaultOptions,
+  xAxis: {
+    enabled: true,
+  },
+  yAxis: {
+    enabled: true,
+  },
+};
+
 export function initializeChartDimensions(
   userOptions: Partial<ChartOptions> = {}
 ): ChartOptions {
@@ -36,6 +46,13 @@ export function initializeBarChartDimensions(
   userOptions: Partial<BarChartOptions> = {}
 ): BarChartOptions {
   const options = { ...defaultBarChartOptions, ...userOptions };
+  return options;
+}
+
+export function initializeLineChartDimensions(
+  userOptions: Partial<LineChartOptions> = {}
+): LineChartOptions {
+  const options = { ...defaultLineChartOptions, ...userOptions };
   return options;
 }
 

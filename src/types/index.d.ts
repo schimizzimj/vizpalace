@@ -39,3 +39,5 @@ export interface ChartOptions {
 export interface BarChartOptions extends ChartOptions, AxisOptions {
   displayType?: "stacked" | "grouped";
 }
+
+export interface LineChartOptions extends ChartOptions, AxisOptions {}
