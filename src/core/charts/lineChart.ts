@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { interpolatePath } from "d3-interpolate-path";
 import {
   createSVG,
   appendXAxis,
@@ -50,40 +51,70 @@ export function createLineChart<T = number | string | Date>(
 
   const yScale = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
 
-  data.forEach((series, i) => {
-    // Create the line generator
-    const line = d3
-      .line<DataPoint<T>>()
-      .x((d) => {
-        if (isScaleBand(xScale)) {
-          return (xScale(d.x as string) ?? 0) + xScale.bandwidth() / 2;
-        }
-        // TODO: Fix the any cast
-        return xScale(d.x as any) ?? 0;
-      })
-      .y((d) => yScale(d.y ?? 0) ?? 0);
+  let linesWrapper: d3.Selection<SVGGElement, any, any, any> =
+    svg.select(".lines-wrapper");
+  if (linesWrapper.empty()) {
+    linesWrapper = svg.append("g").attr("class", "lines-wrapper");
+  }
 
-    // Draw the line
-    const linePath = svg
-      .datum(series.values)
-      .append("path")
-      .attr("class", `line line-${i}`)
-      .attr("d", line)
-      .attr("fill", "none")
-      .attr("stroke", series.color ?? "black")
-      .attr("stroke-width", 1.5);
+  const lines = linesWrapper
+    .selectAll<SVGPathElement, any>(".line")
+    .data(data, (d) => d.name);
 
-    if (linePath.node()?.getTotalLength) {
-      const totalLength = linePath.node()?.getTotalLength() ?? 0;
-      linePath
-        .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
-        .attr("stroke-dashoffset", totalLength)
+  lines.exit().remove();
+
+  const lineGenerator = d3
+    .line<DataPoint<T>>()
+    .x((d) => {
+      if (isScaleBand(xScale)) {
+        return (xScale(d.x as string) ?? 0) + xScale.bandwidth() / 2;
+      }
+      // TODO: Fix the any cast
+      return xScale(d.x as any) ?? 0;
+    })
+    .y((d) => yScale(d.y ?? 0) ?? 0);
+
+  lines.join(
+    (enter) =>
+      enter
+        .append("path")
+        .attr("class", "line")
+        .attr("fill", "none")
+        .attr("stroke", (d) => d.color ?? "black")
+        .attr("d", (d) => lineGenerator(d.values))
+        .attr("stroke-dasharray", function () {
+          if (!this.getTotalLength) {
+            return "none";
+          }
+          const totalLength: number = this.getTotalLength();
+          return `${totalLength} ${totalLength}`;
+        })
+        .attr("stroke-dashoffset", function () {
+          if (!this.getTotalLength) {
+            return 0;
+          }
+          const totalLength: number = this.getTotalLength();
+          return totalLength;
+        })
+        .attr("stroke-width", 1.5)
         .transition()
         .duration(duration)
         .ease(d3.easeLinear)
-        .attr("stroke-dashoffset", 0);
-    }
-  });
+        .attr("stroke-dashoffset", 0),
+    (update) =>
+      update
+        .attr("stroke-dasharray", "none")
+        .attr("stroke-dashoffset", 0)
+        .transition()
+        .duration(duration)
+        .ease(d3.easeLinear)
+        .attrTween("d", function (d) {
+          const previous = d3.select(this).attr("d");
+          const current = lineGenerator(d.values) ?? "";
+          return interpolatePath(previous, current);
+        }),
+    (exit) => exit.remove()
+  );
 
   appendXAxis(svg, xScale, chartDimensions, xAxis ?? {});
   appendYAxis(svg, yScale, chartDimensions, yAxis ?? {});

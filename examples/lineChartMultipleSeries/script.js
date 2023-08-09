@@ -1,5 +1,5 @@
 import { createLineChart } from "../../src/core/charts/lineChart";
-import { data } from "./data";
+import { data, data2 } from "./data";
 
 const chartOptions = {
   chartDimensions: {
@@ -16,3 +16,14 @@ const chartOptions = {
 };
 
 createLineChart(document.getElementById("lineChart"), data, chartOptions);
+
+const setDataset1Button = document.getElementById("setDataset1");
+const setDataset2Button = document.getElementById("setDataset2");
+
+setDataset1Button.addEventListener("click", () => {
+  createLineChart(document.getElementById("lineChart"), data, chartOptions);
+});
+
+setDataset2Button.addEventListener("click", () => {
+  createLineChart(document.getElementById("lineChart"), data2, chartOptions);
+});

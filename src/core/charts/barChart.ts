@@ -116,7 +116,7 @@ function drawGroupedBars<T = number | string | Date>(
 ) {
   const barWidth = isScaleBand(xScale) ? xScale.bandwidth() / data.length : 20;
 
-  const computeBarX = (d: DataPoint<T>, i: number) => {
+  const computeBarX = (d: DataPoint<T>) => {
     if (isScaleBand(xScale)) {
       return (xScale(d.x) ?? 0) + barWidth * (d.seriesIndex ?? 0);
     } else {
@@ -130,7 +130,7 @@ function drawGroupedBars<T = number | string | Date>(
     }
   };
 
-  let barsWrapper: d3.Selection<SVGGElement, unkown, any, any> =
+  let barsWrapper: d3.Selection<SVGGElement, any, any, any> =
     svg.select("g.bars-wrapper");
   if (barsWrapper.empty()) {
     barsWrapper = svg.append("g").attr("class", "bars-wrapper");
@@ -225,7 +225,7 @@ function drawStackedBars(
     return "black";
   };
 
-  let barsWrapper: d3.Selection<SVGGElement, unkown, any, any> =
+  let barsWrapper: d3.Selection<SVGGElement, any, any, any> =
     svg.select("g.bars-wrapper");
   if (barsWrapper.empty()) {
     barsWrapper = svg.append("g").attr("class", "bars-wrapper");
