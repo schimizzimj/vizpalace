@@ -149,6 +149,31 @@ describe("lineChart", () => {
       expect(yAxis).toBeNull();
     });
 
+    test("should not display y axis title by default", () => {
+      createLineChart(container, data, {});
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const yAxisTitle = svg.querySelector(".y-axis-title");
+      expect(yAxisTitle).toBeNull();
+    });
+
+    test("it should display y axis title when enabled", () => {
+      createLineChart(container, data, {
+        yAxis: {
+          title: "Y Axis",
+        },
+      });
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const yAxisTitle = svg.querySelector(".y-axis-title");
+      assert(yAxisTitle);
+      expect(yAxisTitle.textContent).toBe("Y Axis");
+    });
+
     test("it should look visually correct", async () => {
       createLineChart(container, data, {});
       await new Promise((resolve) => setTimeout(resolve, 1000));
