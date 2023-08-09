@@ -1,6 +1,8 @@
 export interface DataPoint<T = string | number | Date> {
   x: T; // x-axis value, can be a category, numeric value or date
   y: number | null; // y-axis value
+  seriesName?: string; // name of the series
+  seriesIndex?: number; // index of the series
 }
 
 export interface ChartSeries<T = string | number | Date> {

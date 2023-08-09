@@ -6,7 +6,7 @@ import {
   appendYAxis,
   initializeBarChartDimensions,
 } from "../base/chartUtils";
-import { BarChartOptions, ChartData } from "../../types";
+import { BarChartOptions, ChartData, DataPoint } from "../../types";
 import { isScaleBand } from "../utils/utils";
 
 interface ColoredSeriesPoint<T> extends d3.SeriesPoint<T> {
@@ -25,7 +25,7 @@ export function createBarChart<T = string | number | Date>(
     options;
   const { width, height } = chartDimensions;
   const svg = createSVG(element, options);
-  const duration = animationDuration ?? 1000;
+  const duration = animationDuration ?? 500;
   const type = displayType ?? "grouped";
 
   const allDataPoints = data.flatMap((series) => series.values);
@@ -116,38 +116,82 @@ function drawGroupedBars<T = number | string | Date>(
 ) {
   const barWidth = isScaleBand(xScale) ? xScale.bandwidth() / data.length : 20;
 
-  data.forEach((series, i) => {
-    const bars = svg
-      .selectAll(`.bar-${i}`)
-      .data(series.values)
-      .enter()
-      .append("rect")
-      .attr("class", `bar bar-${i}`)
-      .attr("x", (d) => {
-        if (isScaleBand(xScale)) {
-          return (xScale(d.x) ?? 0) + barWidth * i;
-        } else {
-          return (
-            (xScale as ScaleLinear<number, number> | ScaleTime<number, number>)(
-              d.x as number | Date
-            ) -
-            barWidth / 2 +
-            barWidth * i
-          );
-        }
-      })
-      .attr("y", height)
-      .attr("width", barWidth)
-      .attr("fill", series.color ?? (colors(series.name) as string))
-      .attr("height", 0);
-    bars
-      .transition()
-      .duration(duration)
-      .ease(d3.easeCubicInOut)
-      .attr("y", (d) => yScale(d.y ?? 0))
-      .attr("height", (d) => height - yScale(d.y ?? 0))
-      .delay((_, i) => i * (duration / series.values.length));
-  });
+  const computeBarX = (d: DataPoint<T>, i: number) => {
+    if (isScaleBand(xScale)) {
+      return (xScale(d.x) ?? 0) + barWidth * (d.seriesIndex ?? 0);
+    } else {
+      return (
+        (xScale as ScaleLinear<number, number> | ScaleTime<number, number>)(
+          d.x as number | Date
+        ) -
+        barWidth / 2 +
+        barWidth * (d.seriesIndex ?? 0)
+      );
+    }
+  };
+
+  let barsWrapper: d3.Selection<SVGGElement, unkown, any, any> =
+    svg.select("g.bars-wrapper");
+  if (barsWrapper.empty()) {
+    barsWrapper = svg.append("g").attr("class", "bars-wrapper");
+  }
+
+  const series = barsWrapper
+    .selectAll(".series")
+    .data(data)
+    .join("g")
+    .attr("class", (_, i) => `series series-${i}`)
+    .attr("fill", (d) => d.color ?? (colors(d.name) as string) ?? "black");
+
+  const bars: d3.Selection<
+    SVGRectElement,
+    DataPoint<T>,
+    SVGGElement,
+    unknown
+  > = series
+    .each(function (d, i) {
+      d.values.forEach((val) => {
+        val.seriesName = d.name;
+        val.seriesIndex = i;
+      });
+    })
+    .selectAll("rect.bar")
+    .data((d) => d.values) as unknown as d3.Selection<
+    SVGRectElement,
+    DataPoint<T>,
+    SVGGElement,
+    unknown
+  >;
+
+  bars
+    .exit()
+    .transition()
+    .duration(duration)
+    .ease(d3.easeCubicInOut)
+    .attr("y", height)
+    .attr("height", 0)
+    .remove();
+
+  bars
+    .enter()
+    .append("rect")
+    .attr("class", (_, i) => `bar bar-${i}`)
+    .attr("x", computeBarX)
+    .attr("y", height)
+    .attr("width", barWidth)
+    .attr("height", 0)
+    .merge(bars)
+    .attr("fill", (d) =>
+      d.seriesName ? (colors(d.seriesName) as string) : "black"
+    )
+    .transition()
+    .duration(duration)
+    .ease(d3.easeCubicInOut)
+    .attr("x", computeBarX)
+    .attr("y", (d) => yScale(d.y ?? 0))
+    .attr("width", barWidth)
+    .attr("height", (d) => height - yScale(d.y ?? 0))
+    .delay((_, i) => i * (duration / data[0].values.length));
 }
 
 function drawStackedBars(
@@ -164,41 +208,71 @@ function drawStackedBars(
 ) {
   const barWidth = isScaleBand(xScale) ? xScale.bandwidth() : 20;
 
-  const series = svg
+  const computeBarX = (d: d3.SeriesPoint<{ [key: string]: number }>) => {
+    if (isScaleBand(xScale)) {
+      return xScale(d.data.label) ?? 0;
+    } else {
+      return xScale(d.data.label as any) ?? 0;
+    }
+  };
+
+  const computeFill = (d: d3.SeriesPoint<{ [key: string]: number }>) => {
+    if ((d as any).color) {
+      return (d as any).color;
+    } else if ((d as any).seriesName) {
+      return colors((d as any).seriesName);
+    }
+    return "black";
+  };
+
+  let barsWrapper: d3.Selection<SVGGElement, unkown, any, any> =
+    svg.select("g.bars-wrapper");
+  if (barsWrapper.empty()) {
+    barsWrapper = svg.append("g").attr("class", "bars-wrapper");
+  }
+
+  const series = barsWrapper
     .selectAll(".series")
     .data(data)
-    .enter()
-    .append("g")
-    .attr("class", "series");
+    .join("g")
+    .attr("class", (_, i) => `series series-${i}`);
 
-  const bars = series
-    .selectAll("rect")
-    .data((d) => d)
-    .enter()
-    .append("rect")
-    .attr("fill", (d) => {
-      if ((d as any).color) {
-        return (d as any).color;
-      } else if ((d as any).seriesName) {
-        return colors((d as any).seriesName);
-      }
-      return "black";
-    })
-    .attr("x", (d) => {
-      if (isScaleBand(xScale)) {
-        return xScale(d.data.label) ?? 0;
-      } else {
-        return xScale(d.data.label as any) ?? 0;
-      }
-    })
-    .attr("y", height)
-    .attr("height", 0)
-    .attr("width", barWidth);
+  const bars: d3.Selection<
+    SVGRectElement,
+    d3.SeriesPoint<{ [key: string]: number }>,
+    SVGGElement,
+    unknown
+  > = series.selectAll(".bar").data((d) => d) as unknown as d3.Selection<
+    SVGRectElement,
+    d3.SeriesPoint<{ [key: string]: number }>,
+    SVGGElement,
+    unknown
+  >;
 
   bars
+    .exit()
+    .transition()
+    .duration(duration / 2)
+    .ease(d3.easeCubicInOut)
+    .attr("y", height)
+    .attr("height", 0)
+    .remove();
+
+  bars
+    .enter()
+    .append("rect")
+    .attr("class", (_, i) => `bar bar-${i}`)
+    .attr("x", computeBarX)
+    .attr("y", height)
+    .attr("height", 0)
+    .attr("width", barWidth)
+    .merge(bars)
+    .attr("fill", computeFill)
     .transition()
     .duration(duration)
     .ease(d3.easeCubicInOut)
+    .attr("width", barWidth)
+    .attr("x", computeBarX)
     .attr("y", (d) => yScale(d[1]))
     .attr("height", (d) => yScale(d[0]) - yScale(d[1]))
     .delay((_, i) => i * (duration / data[0].length));

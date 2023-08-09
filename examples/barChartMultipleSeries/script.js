@@ -1,5 +1,5 @@
 import { createBarChart } from "../../src/core/charts/barChart";
-import { data } from "./data";
+import { data1, data2 } from "./data";
 
 const chartOptions = {
   chartDimensions: {
@@ -15,4 +15,15 @@ const chartOptions = {
   displayType: "grouped",
 };
 
-createBarChart(document.getElementById("barChart"), data, chartOptions);
+createBarChart(document.getElementById("barChart"), data1, chartOptions);
+
+const setDataset1Button = document.getElementById("setDataset1");
+const setDataset2Button = document.getElementById("setDataset2");
+
+setDataset1Button.addEventListener("click", () => {
+  createBarChart(document.getElementById("barChart"), data1, chartOptions);
+});
+
+setDataset2Button.addEventListener("click", () => {
+  createBarChart(document.getElementById("barChart"), data2, chartOptions);
+});
