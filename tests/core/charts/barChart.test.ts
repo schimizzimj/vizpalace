@@ -41,9 +41,11 @@ describe("barChart", () => {
 
     test("it should use custom width and height", () => {
       const config = {
-        width: 100,
-        height: 100,
-        margin: { top: 0, bottom: 0, left: 0, right: 0 },
+        chartDimensions: {
+          width: 100,
+          height: 100,
+          margin: { top: 0, bottom: 0, left: 0, right: 0 },
+        },
       };
       createBarChart(container, data, config);
 
@@ -55,19 +57,23 @@ describe("barChart", () => {
 
     test("it should use custom margins", () => {
       const config = {
-        width: 100,
-        height: 100,
-        margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        chartDimensions: {
+          width: 100,
+          height: 100,
+          margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        },
       };
       createBarChart(container, data, config);
+
+      const { width, margin, height } = config.chartDimensions;
 
       const svg = container.querySelector("svg");
       assert(svg);
       expect(svg.getAttribute("width")).toBe(
-        `${config.width + config.margin.left + config.margin.right}`
+        `${width + margin.left + margin.right}`
       );
       expect(svg.getAttribute("height")).toBe(
-        `${config.height + config.margin.top + config.margin.bottom}`
+        `${height + margin.top + margin.bottom}`
       );
     });
 
@@ -95,7 +101,38 @@ describe("barChart", () => {
       expect(xAxis).toBeNull();
     });
 
-    test("it should display the y axis by default", () => {
+    test("should not display the x axis title by default", () => {
+      createBarChart(container, data, {});
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const xAxis = svg.querySelector(".x-axis");
+      assert(xAxis);
+
+      const title = svg.querySelector(".x-axis-title");
+      expect(title).toBeNull();
+    });
+
+    test("should display the x axis title when defined", () => {
+      createBarChart(container, data, {
+        xAxis: {
+          title: "Test",
+        },
+      });
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const xAxis = svg.querySelector(".x-axis");
+      assert(xAxis);
+
+      const title = svg.querySelector(".x-axis-title");
+      assert(title);
+      expect(title.textContent).toBe("Test");
+    });
+
+    test("should display the y axis by default", () => {
       createBarChart(container, data, {});
 
       const svg = container.querySelector("svg");
@@ -105,7 +142,7 @@ describe("barChart", () => {
       assert(yAxis);
     });
 
-    test("it should not display the y axis when disabled", () => {
+    test("should not display the y axis when disabled", () => {
       createBarChart(container, data, {
         yAxis: {
           enabled: false,

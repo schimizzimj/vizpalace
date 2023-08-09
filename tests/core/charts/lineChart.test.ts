@@ -41,9 +41,11 @@ describe("lineChart", () => {
 
     test("it should use custom width and height", () => {
       const config = {
-        width: 100,
-        height: 100,
-        margin: { top: 0, bottom: 0, left: 0, right: 0 },
+        chartDimensions: {
+          width: 100,
+          height: 100,
+          margin: { top: 0, bottom: 0, left: 0, right: 0 },
+        },
       };
       createLineChart(container, data, config);
 
@@ -55,19 +57,22 @@ describe("lineChart", () => {
 
     test("it should use custom margins", () => {
       const config = {
-        width: 100,
-        height: 100,
-        margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        chartDimensions: {
+          width: 100,
+          height: 100,
+          margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        },
       };
+      const { width, margin, height } = config.chartDimensions;
       createLineChart(container, data, config);
 
       const svg = container.querySelector("svg");
       assert(svg);
       expect(svg.getAttribute("width")).toBe(
-        `${config.width + config.margin.left + config.margin.right}`
+        `${width + margin.left + margin.right}`
       );
       expect(svg.getAttribute("height")).toBe(
-        `${config.height + config.margin.top + config.margin.bottom}`
+        `${height + margin.top + margin.bottom}`
       );
     });
 
@@ -93,6 +98,31 @@ describe("lineChart", () => {
 
       const xAxis = svg.querySelector(".x-axis");
       expect(xAxis).toBeNull();
+    });
+
+    test("should not display x axis title by default", () => {
+      createLineChart(container, data, {});
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const xAxisTitle = svg.querySelector(".x-axis-title");
+      expect(xAxisTitle).toBeNull();
+    });
+
+    test("it should display x axis title when enabled", () => {
+      createLineChart(container, data, {
+        xAxis: {
+          title: "X Axis",
+        },
+      });
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const xAxisTitle = svg.querySelector(".x-axis-title");
+      assert(xAxisTitle);
+      expect(xAxisTitle.textContent).toBe("X Axis");
     });
 
     test("it should display y axis by default", () => {

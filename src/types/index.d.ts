@@ -11,11 +11,12 @@ export interface ChartSeries<T = string | number | Date> {
 
 export type ChartData<T = string | number | Date> = ChartSeries<T>[];
 
-interface XAxisOptions {
+export interface XAxisOptions {
   enabled?: boolean;
+  title?: string;
 }
 
-interface YAxisOptions {
+export interface YAxisOptions {
   enabled?: boolean;
 }
 
@@ -24,15 +25,19 @@ interface AxisOptions {
   xAxis?: XAxisOptions;
 }
 
-export interface ChartOptions {
+export interface ChartDimensions {
   width: number;
   height: number;
-  margin?: {
+  margin: {
     top: number;
     right: number;
     bottom: number;
     left: number;
   };
+}
+
+export interface ChartOptions {
+  chartDimensions: ChartDimensions;
   animationDuration?: number;
 }
 

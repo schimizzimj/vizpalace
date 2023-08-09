@@ -1,15 +1,23 @@
 import * as d3 from "d3";
-import { BarChartOptions, ChartOptions, LineChartOptions } from "../../types";
+import {
+  BarChartOptions,
+  ChartDimensions,
+  ChartOptions,
+  LineChartOptions,
+  XAxisOptions,
+} from "../../types";
 import { isScaleBand } from "../utils/utils";
 
 export const defaultOptions: ChartOptions = {
-  width: 600,
-  height: 400,
-  margin: {
-    top: 20,
-    right: 20,
-    bottom: 30,
-    left: 40,
+  chartDimensions: {
+    width: 600,
+    height: 400,
+    margin: {
+      top: 20,
+      right: 20,
+      bottom: 30,
+      left: 40,
+    },
   },
 };
 
@@ -60,7 +68,8 @@ export function createSVG(
   container: HTMLElement,
   options: ChartOptions
 ): d3.Selection<SVGGElement, unknown, any, any> {
-  const { width, height, margin } = options;
+  const { chartDimensions } = options;
+  const { width, height, margin } = chartDimensions;
   const svg = d3
     .select(container)
     .append("svg")
@@ -80,11 +89,16 @@ type XScale =
 export function appendXAxis(
   svg: d3.Selection<SVGGElement, unknown, any, any>,
   scale: XScale,
-  height: number
+  chartDimensions: ChartDimensions,
+  xAxisOptions: XAxisOptions
 ): void {
+  let xAxis: d3.Selection<SVGGElement, unknown, any, any>;
+  if (xAxisOptions.enabled === false) return;
+
+  const { width, height } = chartDimensions;
   if (isScaleBand(scale)) {
     const axis = d3.axisBottom(scale);
-    svg
+    xAxis = svg
       .append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0, ${height})`)
@@ -93,11 +107,27 @@ export function appendXAxis(
     const axis = d3.axisBottom(
       scale as d3.ScaleTime<number, number> | d3.ScaleLinear<number, number>
     );
-    svg
+    xAxis = svg
       .append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0, ${height})`)
       .call(axis);
+  }
+
+  // Add x axis title if defined
+  if (xAxisOptions.title) {
+    const xAxisHeight =
+      xAxis.node() instanceof SVGGraphicsElement
+        ? xAxis.node()?.getBBox().height ?? 20
+        : 20;
+    svg
+      .append("text")
+      .attr("class", "x-axis-title")
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "hanging")
+      .attr("x", width / 2)
+      .attr("y", height + xAxisHeight + 10)
+      .text(xAxisOptions.title);
   }
 }
 

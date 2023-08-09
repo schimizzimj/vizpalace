@@ -14,7 +14,8 @@ export function createLineChart<T = number | string | Date>(
   userOptions: Partial<LineChartOptions> = {}
 ): void {
   const options = initializeLineChartDimensions(userOptions);
-  let { width, height, animationDuration, xAxis, yAxis } = options;
+  let { chartDimensions, animationDuration, xAxis, yAxis } = options;
+  const { width, height } = chartDimensions;
   const svg = createSVG(element, options);
   const duration = animationDuration ?? 0;
 
@@ -84,9 +85,7 @@ export function createLineChart<T = number | string | Date>(
     }
   });
 
-  if (xAxis?.enabled) {
-    appendXAxis(svg, xScale, height);
-  }
+  appendXAxis(svg, xScale, chartDimensions, xAxis ?? {});
   if (yAxis?.enabled) {
     appendYAxis(svg, yScale);
   }
