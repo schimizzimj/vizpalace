@@ -156,6 +156,37 @@ describe("barChart", () => {
       expect(yAxis).toBeNull();
     });
 
+    test("should not display the y axis title by default", () => {
+      createBarChart(container, data, {});
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const yAxis = svg.querySelector(".y-axis");
+      assert(yAxis);
+
+      const title = svg.querySelector(".y-axis-title");
+      expect(title).toBeNull();
+    });
+
+    test("should display the y axis title when defined", () => {
+      createBarChart(container, data, {
+        yAxis: {
+          title: "Test",
+        },
+      });
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const yAxis = svg.querySelector(".y-axis");
+      assert(yAxis);
+
+      const title = svg.querySelector(".y-axis-title");
+      assert(title);
+      expect(title.textContent).toBe("Test");
+    });
+
     test("it should look visually correct", async () => {
       createBarChart(container, data, { animationDuration: 0 });
       await new Promise((resolve) => setTimeout(resolve, 1000));

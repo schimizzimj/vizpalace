@@ -18,6 +18,7 @@ export interface XAxisOptions {
 
 export interface YAxisOptions {
   enabled?: boolean;
+  title?: string;
 }
 
 interface AxisOptions {

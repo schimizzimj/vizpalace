@@ -80,9 +80,7 @@ export function createBarChart<T = string | number | Date>(
     drawGroupedBars(svg, data, xScale, yScale, colorScale, height, duration);
   }
   appendXAxis(svg, xScale, chartDimensions, xAxis ?? {});
-  if (yAxis?.enabled) {
-    appendYAxis(svg, yScale);
-  }
+  appendYAxis(svg, yScale, chartDimensions, yAxis ?? {});
 }
 
 function prepareStackedData<T = number | string | Date>(data: ChartData<T>) {

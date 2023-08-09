@@ -86,7 +86,5 @@ export function createLineChart<T = number | string | Date>(
   });
 
   appendXAxis(svg, xScale, chartDimensions, xAxis ?? {});
-  if (yAxis?.enabled) {
-    appendYAxis(svg, yScale);
-  }
+  appendYAxis(svg, yScale, chartDimensions, yAxis ?? {});
 }

@@ -16,6 +16,9 @@ const chartOptions = {
   xAxis: {
     title: "X Axis Title",
   },
+  yAxis: {
+    title: "Y Axis Title",
+  },
 };
 
 createLineChart(document.getElementById("lineChart"), data, chartOptions);
