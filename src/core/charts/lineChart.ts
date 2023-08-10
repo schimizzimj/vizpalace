@@ -1,13 +1,9 @@
 import * as d3 from "d3";
 import { interpolatePath } from "d3-interpolate-path";
-import {
-  createSVG,
-  appendXAxis,
-  appendYAxis,
-  initializeLineChartDimensions,
-} from "../base/chartUtils";
+import { createSVG, initializeLineChartDimensions } from "../base/chartUtils";
 import { ChartData, DataPoint, LineChartOptions } from "../../types";
 import { isScaleBand } from "../utils/utils";
+import { appendXAxis, appendYAxis } from "../base/axes";
 
 export function createLineChart<T = number | string | Date>(
   element: HTMLElement,

@@ -1,13 +1,9 @@
 import * as d3 from "d3";
 import { ScaleBand, ScaleLinear, ScaleTime, ScaleOrdinal } from "d3";
-import {
-  createSVG,
-  appendXAxis,
-  appendYAxis,
-  initializeBarChartDimensions,
-} from "../base/chartUtils";
+import { createSVG, initializeBarChartDimensions } from "../base/chartUtils";
 import { BarChartOptions, ChartData, DataPoint } from "../../types";
 import { isScaleBand } from "../utils/utils";
+import { appendXAxis, appendYAxis } from "../base/axes";
 
 interface ColoredSeriesPoint<T> extends d3.SeriesPoint<T> {
   color?: string;
