@@ -1,5 +1,10 @@
 import * as d3 from "d3";
-import { BarChartOptions, ChartOptions, LineChartOptions } from "../../types";
+import {
+  BarChartOptions,
+  ChartOptions,
+  LineChartOptions,
+  ScatterPlotOptions,
+} from "../../types";
 
 export const defaultOptions: ChartOptions = {
   chartDimensions: {
@@ -35,6 +40,16 @@ export const defaultLineChartOptions: LineChartOptions = {
   },
 };
 
+export const defaultScatterPlotOptions: ScatterPlotOptions = {
+  ...defaultOptions,
+  xAxis: {
+    enabled: true,
+  },
+  yAxis: {
+    enabled: true,
+  },
+};
+
 export function initializeChartDimensions(
   userOptions: Partial<ChartOptions> = {}
 ): ChartOptions {
@@ -54,6 +69,13 @@ export function initializeLineChartDimensions(
   userOptions: Partial<LineChartOptions> = {}
 ): LineChartOptions {
   const options = { ...defaultLineChartOptions, ...userOptions };
+  return options;
+}
+
+export function initializeScatterPlotDimensions(
+  userOptions: Partial<ScatterPlotOptions> = {}
+): ScatterPlotOptions {
+  const options = { ...defaultScatterPlotOptions, ...userOptions };
   return options;
 }
 

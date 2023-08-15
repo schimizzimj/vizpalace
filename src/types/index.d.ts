@@ -49,3 +49,5 @@ export interface BarChartOptions extends ChartOptions, AxisOptions {
 }
 
 export interface LineChartOptions extends ChartOptions, AxisOptions {}
+
+export interface ScatterPlotOptions extends ChartOptions, AxisOptions {}
