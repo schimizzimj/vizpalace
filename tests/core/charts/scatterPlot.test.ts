@@ -86,6 +86,16 @@ describe("scatterChart", () => {
       assert(xAxis);
     });
 
+    test("it should not display the x axis if disabled", () => {
+      createScatterPlot(container, data, { xAxis: { enabled: false } });
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const xAxis = svg.querySelector(".x-axis");
+      expect(xAxis).toBeNull();
+    });
+
     test("it should display y axis by default", () => {
       createScatterPlot(container, data, {});
 
@@ -94,6 +104,16 @@ describe("scatterChart", () => {
 
       const yAxis = svg.querySelector(".y-axis");
       assert(yAxis);
+    });
+
+    test("it should not display the y axis if disabled", () => {
+      createScatterPlot(container, data, { yAxis: { enabled: false } });
+
+      const svg = container.querySelector("svg");
+      assert(svg);
+
+      const yAxis = svg.querySelector(".y-axis");
+      expect(yAxis).toBeNull();
     });
 
     test("it should look visually correct", async () => {
