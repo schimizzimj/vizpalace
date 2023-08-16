@@ -85,7 +85,6 @@ export function createSVG(
 ): d3.Selection<SVGGElement, unknown, any, any> {
   const { chartDimensions } = options;
   const { width, height, margin } = chartDimensions;
-  console.log("dimensions", chartDimensions);
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined> = d3
     .select(container)
     .select("svg");
